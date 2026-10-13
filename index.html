@@ -1,1 +1,893 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestionale Formulari Dogana</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #e9ecef; margin: 0; padding: 0; display: flex; height: 100vh; overflow: hidden; }
+        
+        .sidebar { background-color: #2c3e50; width: 230px; display: flex; flex-direction: column; padding-top: 20px; box-shadow: 2px 0 5px rgba(0,0,0,0.2); z-index: 10; }
+        .titolo-sidebar { color: #f39c12; text-align: center; font-size: 1.3rem; font-weight: bold; margin-bottom: 20px; border-bottom: 1px solid #34495e; padding-bottom: 15px; }
+        .nav-btn { background-color: transparent; color: #ecf0f1; border: none; padding: 12px 15px; margin: 2px 10px; font-size: 1.05rem; cursor: pointer; border-radius: 4px; font-weight: bold; text-align: left; transition: 0.2s; border-left: 4px solid transparent;}
+        .nav-btn:hover { background-color: #34495e; }
+        .nav-btn.attivo { background-color: #34495e; color: #f39c12; border-left: 4px solid #f39c12; } 
 
+        .main-content { flex: 1; padding: 20px; overflow-y: auto; background-color: #e9ecef; display: flex; flex-direction: column;}
+        
+        .top-action-bar { background-color: #fff; padding: 10px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; border-left: 5px solid #2980b9;}
+        .titolo-form-corrente { font-size: 1.4rem; font-weight: bold; color: #2980b9; margin-left: 10px;}
+        .action-buttons { display: flex; gap: 10px; }
+        .action-btn { background-color: #ecf0f1; border: 1px solid #bdc3c7; padding: 8px 15px; font-weight: bold; cursor: pointer; border-radius: 3px; color: #333; }
+        .action-btn:hover { background-color: #e0e0e0; }
+        .action-btn.attivo { background-color: #2980b9; color: white; border-color: #2980b9;}
+        
+        /* STILE DEL NUOVO BOTTONE REPORT */
+        #btn-report { background-color: #8e44ad; color: white; border-color: #732d91; display: none; }
+        #btn-report:hover { background-color: #9b59b6; }
+
+        .pagina { display: none; background-color: #f8f9fa; border: 2px solid #ccc; padding: 20px; box-shadow: 5px 5px 15px rgba(0,0,0,0.2); box-sizing: border-box; }
+        .pagina.attiva { display: block; }
+
+        .header-section { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
+        .titolo-box { border: 2px solid #333; padding: 10px; background-color: #fff; text-align: center; width: 60%; }
+        .titolo-box h1 { margin: 0; font-size: 1.5rem; color: #000; border-bottom: 2px solid #333; padding-bottom: 5px; }
+        .numero-giallo { background-color: #ffff99; height: 40px; font-size: 1.8rem; font-weight: bold; color: #d32f2f; display: flex; align-items: center; justify-content: center; margin-top: 5px; }
+        
+        .grid-row { display: flex; gap: 10px; margin-bottom: 15px; }
+        .grid-item { display: flex; flex-direction: column; flex: 1; border: 1px solid #999; background: #fff; position: relative;}
+        .grid-item label { background-color: #e0e0e0; text-align: center; font-weight: bold; font-size: 0.85rem; padding: 4px; border-bottom: 1px solid #999; display: flex; justify-content: center; align-items: center; gap: 5px; }
+        .grid-item input, .grid-item select { border: none; padding: 8px; font-size: 0.95rem; outline: none; width: 100%; box-sizing: border-box; font-family: inherit;}
+        
+        .listbox-multipla { background-color: #f4f6f7; border-top: 1px solid #ccc; width: 100%; min-height: 55px; outline: none;}
+        .listbox-multipla option { padding: 4px; border-bottom: 1px dashed #ccc; text-align: center; font-weight: bold; color: #2980b9;}
+
+        .btn-mini-modifica { background: #f39c12; color: white; border: none; border-radius: 3px; cursor: pointer; padding: 2px 6px; font-size: 0.7rem; font-weight: bold; margin-left: auto; margin-right: 5px;}
+        .btn-mini-modifica:hover { background: #d68910; }
+
+        .button-section { text-align: center; margin-top: 20px; display: flex; justify-content: center; align-items: center; gap: 15px; flex-wrap: wrap; }
+        .btn-main { background-color: #f4f4f4; border: 2px solid #333; padding: 10px 30px; font-weight: bold; font-size: 1.1rem; cursor: pointer; box-shadow: 2px 2px 0px #999; margin: 0; }
+        .btn-main:hover { background-color: #e0e0e0; }
+        .btn-main:disabled { background-color: #bdc3c7; color: #7f8c8d; cursor: not-allowed; border-color: #95a5a6; box-shadow: none; }
+        
+        .messaggio-esito { text-align: center; font-weight: bold; font-size: 1.1rem; margin: 0; }
+        .barra-navigazione { display: flex; justify-content: space-between; align-items: center; background: #2c3e50; color: white; padding: 10px; border-radius: 4px; margin-bottom: 20px; font-weight: bold;}
+        .btn-freccia { background: white; color: #2c3e50; border: none; padding: 5px 15px; font-size: 1.2rem; cursor: pointer; font-weight: bold; border-radius: 3px; }
+        .obbligatorio { color: #d32f2f; font-weight: bold; margin-left: 2px; }
+
+        @media (max-width: 768px) {
+            body { flex-direction: column; overflow: auto; height: auto; }
+            .sidebar { width: 100%; flex-direction: row; flex-wrap: wrap; padding: 10px; justify-content: space-around; position: relative;}
+            .titolo-sidebar { display: none; } 
+            .nav-btn { flex: 1 1 30%; text-align: center; padding: 8px 5px; font-size: 0.9rem; margin: 2px; border: none; border-bottom: 3px solid transparent;}
+            .nav-btn.attivo { border-left: none; border-bottom: 3px solid #f39c12; }
+            .top-action-bar { flex-direction: column; gap: 10px; text-align: center; }
+            .main-content { padding: 10px; overflow-y: visible; }
+            .grid-row { flex-direction: column; gap: 8px; }
+            .header-section { flex-direction: column; align-items: center; gap: 10px; }
+            .titolo-box { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="sidebar">
+    <div class="titolo-sidebar">DOGANA CHIASSO<br><span style="font-size: 0.9rem; font-weight: normal; color: #ecf0f1;">Gestione Formulari</span></div>
+    <button class="nav-btn attivo" id="btn-foglio-11.73import" onclick="selezionaFoglio('11.73import')">📄 11.73 Import</button>
+    <button class="nav-btn" id="btn-foglio-1173export" onclick="selezionaFoglio('1173export')">📄 1173 Export</button>
+    <button class="nav-btn" id="btn-foglio-1187import" onclick="selezionaFoglio('1187import')">📄 1187 Import</button>
+    <button class="nav-btn" id="btn-foglio-1187export" onclick="selezionaFoglio('1187export')">📄 1187 Export</button>
+    <button class="nav-btn" id="btn-foglio-11.71import" onclick="selezionaFoglio('11.71import')">📄 11.71 Import</button>
+    <button class="nav-btn" id="btn-foglio-1186export" onclick="selezionaFoglio('1186export')">📄 1186 Export</button>
+</div>
+
+<div class="main-content">
+    <div class="top-action-bar">
+        <div class="titolo-form-corrente" id="display-titolo-foglio">Formulario: 11.73import</div>
+        <div class="action-buttons">
+            <button class="action-btn" id="btn-report" onclick="generaReportPDF()">📊 Report Aperte (PDF)</button>
+            <button class="action-btn attivo" id="btn-azione-nuovo" onclick="cambiaAzione('nuovo')">➕ Nuovo</button>
+            <button class="action-btn" id="btn-azione-cerca" onclick="cambiaAzione('cerca')">🔍 Cerca / Modifica</button>
+        </div>
+    </div>
+
+    <div id="scheda-nuovo" class="pagina attiva">
+        <div class="header-section">
+            <div class="titolo-box">
+                <h1>Nuovo Progressivo</h1>
+                <div id="display-numero-nuovo" class="numero-giallo">...</div>
+            </div>
+        </div>
+        
+        <div class="grid-row">
+            <div class="grid-item"><label>Data Allestimento <span class="obbligatorio">*</span></label><input type="date" id="n_data_allestimento" onchange="calcolaScadenza('n_')"></div>
+            <div class="grid-item" id="blocco-scadenza-nuovo"><label>Data Scadenza <span class="obbligatorio">*</span></label><input type="date" id="n_data_scadenza"></div>
+            <div class="grid-item"><label>Partner Dogana <span class="obbligatorio">*</span></label>
+                <select id="n_partner_dogana" onchange="compilaContoAutomatico('n_')">
+                    <option value="">-- Seleziona --</option>
+                    <option value="Ansali SA - Chiasso Strada">Ansali SA - Chiasso Strada</option>
+                    <option value="Astra Trasporti Int. SA">Astra Trasporti Int. SA</option>
+                    <option value="B & A Customs SA">B & A Customs SA</option>
+                    <option value="B&G International Sagl">B&G International Sagl</option>
+                    <option value="Carugati SA">Carugati SA</option>
+                    <option value="Cippà">Cippà</option>
+                    <option value="Cippà Trasporti SA">Cippà Trasporti SA</option>
+                    <option value="Cippà Trasporti SA - Centralino">Cippà Trasporti SA - Centralino</option>
+                    <option value="Extrasped SA">Extrasped SA</option>
+                    <option value="Focus 93 GmBh">Focus 93 GmBh</option>
+                    <option value="Four Transport">Four Transport</option>
+                    <option value="Franzosini SA">Franzosini SA</option>
+                    <option value="Franzosini SA - sede">Franzosini SA - sede</option>
+                    <option value="Gasped Trasporti Int. SA">Gasped Trasporti Int. SA</option>
+                    <option value="Gerlach AG">Gerlach AG</option>
+                    <option value="Gerlach AG - cellulare">Gerlach AG - cellulare</option>
+                    <option value="Globus">Globus</option>
+                    <option value="Globus Trasporti Int. SA">Globus Trasporti Int. SA</option>
+                    <option value="Gondrand SA - Import e Export">Gondrand SA - Import e Export</option>
+                    <option value="Intervia Transport SA">Intervia Transport SA</option>
+                    <option value="Intex SA">Intex SA</option>
+                    <option value="Jacam Import Export SA">Jacam Import Export SA</option>
+                    <option value="Lems Le Prese">Lems Le Prese</option>
+                    <option value="Licaf Spedizioni Sagl">Licaf Spedizioni Sagl</option>
+                    <option value="MB Express">MB Express</option>
+                    <option value="MC Trans SA">MC Trans SA</option>
+                    <option value="Newtrans SA">Newtrans SA</option>
+                    <option value="OLG international Chiasso">OLG international Chiasso</option>
+                    <option value="PESA SA - Chiasso">PESA SA - Chiasso</option>
+                    <option value="Piffaretti & Olivieri SA">Piffaretti & Olivieri SA</option>
+                    <option value="PostLogistic AG">PostLogistic AG</option>
+                    <option value="Progress Transport SA">Progress Transport SA</option>
+                    <option value="Rolo SA">Rolo SA</option>
+                    <option value="Rolo SA - export">Rolo SA - export</option>
+                    <option value="Rolo SA - import">Rolo SA - import</option>
+                    <option value="Sieber Transport SA">Sieber Transport SA</option>
+                    <option value="Spedimar Sagl - Chiasso">Spedimar Sagl - Chiasso</option>
+                    <option value="Sprinter SA">Sprinter SA</option>
+                    <option value="Trans Service SA - Chiasso">Trans Service SA - Chiasso</option>
+                    <option value="WeDeclare">WeDeclare</option>
+                    <option value="Zürcher Trasporti SA">Zürcher Trasporti SA</option>
+                    <option value="Altro">Altro...</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="grid-row">
+            <div class="grid-item"><label>Status <span class="obbligatorio">*</span></label>
+                <select id="n_status"></select>
+            </div>
+            <div class="grid-item" style="border-color: #2980b9;">
+                <label id="label-extra-nuovo" style="background-color: #d6eaf8; color:#2980b9;">...</label>
+                <input type="text" id="n_campo_extra">
+            </div>
+            <div class="grid-item"><label>Utente</label><input type="text" id="n_utente"></div>
+        </div>
+
+        <div class="grid-row" id="blocco-speciali-nuovo" style="display:none; border: 2px dashed #f39c12; padding: 5px;">
+            <div class="grid-item"><label style="background-color: #fcf3cf; color: #d35400;">Nr. Conto</label><input type="text" id="n_nr_conto"></div>
+            <div class="grid-item"><label style="background-color: #fcf3cf; color: #d35400;">Importo garantito (Fr)</label><input type="number" step="0.01" id="n_importo_garantito"></div>
+        </div>
+        
+        <div class="button-section">
+            <button id="btn-salva-nuovo" class="btn-main" onclick="inviaDati('nuovo')">Salva Formulario</button>
+            <div id="msg-nuovo" class="messaggio-esito"></div>
+        </div>
+    </div>
+
+    <div id="scheda-cerca" class="pagina">
+        <div style="background: #e9ecef; padding: 10px; border: 1px solid #ccc; margin-bottom: 20px;">
+            <div class="grid-row" style="margin-bottom: 0;">
+                <div class="grid-item"><label>Cerca Nr. Progressivo</label><input type="text" id="c_numero" placeholder="Es. 45"></div>
+                <div class="grid-item"><label>Cerca Partner Dogana</label>
+                    <select id="c_partner_dogana">
+                        <option value="">-- Tutti --</option>
+                        <option value="Ansali SA - Chiasso Strada">Ansali SA - Chiasso Strada</option>
+                        <option value="Astra Trasporti Int. SA">Astra Trasporti Int. SA</option>
+                        <option value="B & A Customs SA">B & A Customs SA</option>
+                        <option value="B&G International Sagl">B&G International Sagl</option>
+                        <option value="Carugati SA">Carugati SA</option>
+                        <option value="Cippà">Cippà</option>
+                        <option value="Cippà Trasporti SA">Cippà Trasporti SA</option>
+                        <option value="Cippà Trasporti SA - Centralino">Cippà Trasporti SA - Centralino</option>
+                        <option value="Extrasped SA">Extrasped SA</option>
+                        <option value="Focus 93 GmBh">Focus 93 GmBh</option>
+                        <option value="Four Transport">Four Transport</option>
+                        <option value="Franzosini SA">Franzosini SA</option>
+                        <option value="Franzosini SA - sede">Franzosini SA - sede</option>
+                        <option value="Gasped Trasporti Int. SA">Gasped Trasporti Int. SA</option>
+                        <option value="Gerlach AG">Gerlach AG</option>
+                        <option value="Gerlach AG - cellulare">Gerlach AG - cellulare</option>
+                        <option value="Globus">Globus</option>
+                        <option value="Globus Trasporti Int. SA">Globus Trasporti Int. SA</option>
+                        <option value="Gondrand SA - Import e Export">Gondrand SA - Import e Export</option>
+                        <option value="Intervia Transport SA">Intervia Transport SA</option>
+                        <option value="Intex SA">Intex SA</option>
+                        <option value="Jacam Import Export SA">Jacam Import Export SA</option>
+                        <option value="Lems Le Prese">Lems Le Prese</option>
+                        <option value="Licaf Spedizioni Sagl">Licaf Spedizioni Sagl</option>
+                        <option value="MB Express">MB Express</option>
+                        <option value="MC Trans SA">MC Trans SA</option>
+                        <option value="Newtrans SA">Newtrans SA</option>
+                        <option value="OLG international Chiasso">OLG international Chiasso</option>
+                        <option value="PESA SA - Chiasso">PESA SA - Chiasso</option>
+                        <option value="Piffaretti & Olivieri SA">Piffaretti & Olivieri SA</option>
+                        <option value="PostLogistic AG">PostLogistic AG</option>
+                        <option value="Progress Transport SA">Progress Transport SA</option>
+                        <option value="Rolo SA">Rolo SA</option>
+                        <option value="Rolo SA - export">Rolo SA - export</option>
+                        <option value="Rolo SA - import">Rolo SA - import</option>
+                        <option value="Sieber Transport SA">Sieber Transport SA</option>
+                        <option value="Spedimar Sagl - Chiasso">Spedimar Sagl - Chiasso</option>
+                        <option value="Sprinter SA">Sprinter SA</option>
+                        <option value="Trans Service SA - Chiasso">Trans Service SA - Chiasso</option>
+                        <option value="WeDeclare">WeDeclare</option>
+                        <option value="Zürcher Trasporti SA">Zürcher Trasporti SA</option>
+                        <option value="Altro">Altro...</option>
+                    </select>
+                </div>
+                <div class="grid-item"><label style="background-color: #d6eaf8;"><span id="label-extra-cerca">...</span></label><input type="text" id="c_campo_extra" placeholder="..."></div>
+            </div>
+        </div>
+
+        <div class="button-section" style="margin-top: 0; margin-bottom: 20px;">
+            <button id="btn-cerca" class="btn-main" onclick="avviaRicerca()" style="background: #2c3e50; color: white; margin: 0;">Trova Formulari</button>
+            <div id="msg-cerca" class="messaggio-esito" style="margin-top: 0;"></div>
+        </div>
+        
+        <div id="area-risultati-maschera" style="display: none; border-top: 2px dashed #999; padding-top: 20px;">
+            <div class="barra-navigazione">
+                <button class="btn-freccia" id="btn-indietro" onclick="vaiIndietro()">◄ Prec.</button>
+                <span id="testo-contatore">Record 1 di X</span>
+                <button class="btn-freccia" id="btn-avanti" onclick="vaiAvanti()">Succ. ►</button>
+            </div>
+
+            <div class="header-section">
+                <div class="titolo-box" style="border-color: #f39c12;">
+                    <h1 style="color: #f39c12; border-color: #f39c12;">Risultato Progressivo Nr.</h1>
+                    <div id="v_numero" class="numero-giallo">...</div>
+                </div>
+                <div style="text-align: right; font-weight: bold; font-size: 0.9rem; color: #555;">
+                    Registrato il: <span id="v_dataReg"></span> alle <span id="v_oraReg"></span><br>Da: <span id="v_utente" style="color:#2980b9;"></span>
+                </div>
+            </div>
+
+            <div class="grid-row">
+                <div class="grid-item"><label>Data Allestimento</label><input type="date" id="v_data_allestimento" onchange="calcolaScadenza('v_')"></div>
+                <div class="grid-item" id="blocco-scadenza-risultato"><label>Data Scadenza</label><input type="date" id="v_data_scadenza"></div>
+                <div class="grid-item"><label>Partner Dogana</label>
+                    <select id="v_partner_dogana" onchange="compilaContoAutomatico('v_')">
+                        <option value="Ansali SA - Chiasso Strada">Ansali SA - Chiasso Strada</option>
+                        <option value="Astra Trasporti Int. SA">Astra Trasporti Int. SA</option>
+                        <option value="B & A Customs SA">B & A Customs SA</option>
+                        <option value="B&G International Sagl">B&G International Sagl</option>
+                        <option value="Carugati SA">Carugati SA</option>
+                        <option value="Cippà">Cippà</option>
+                        <option value="Cippà Trasporti SA">Cippà Trasporti SA</option>
+                        <option value="Cippà Trasporti SA - Centralino">Cippà Trasporti SA - Centralino</option>
+                        <option value="Extrasped SA">Extrasped SA</option>
+                        <option value="Focus 93 GmBh">Focus 93 GmBh</option>
+                        <option value="Four Transport">Four Transport</option>
+                        <option value="Franzosini SA">Franzosini SA</option>
+                        <option value="Franzosini SA - sede">Franzosini SA - sede</option>
+                        <option value="Gasped Trasporti Int. SA">Gasped Trasporti Int. SA</option>
+                        <option value="Gerlach AG">Gerlach AG</option>
+                        <option value="Gerlach AG - cellulare">Gerlach AG - cellulare</option>
+                        <option value="Globus">Globus</option>
+                        <option value="Globus Trasporti Int. SA">Globus Trasporti Int. SA</option>
+                        <option value="Gondrand SA - Import e Export">Gondrand SA - Import e Export</option>
+                        <option value="Intervia Transport SA">Intervia Transport SA</option>
+                        <option value="Intex SA">Intex SA</option>
+                        <option value="Jacam Import Export SA">Jacam Import Export SA</option>
+                        <option value="Lems Le Prese">Lems Le Prese</option>
+                        <option value="Licaf Spedizioni Sagl">Licaf Spedizioni Sagl</option>
+                        <option value="MB Express">MB Express</option>
+                        <option value="MC Trans SA">MC Trans SA</option>
+                        <option value="Newtrans SA">Newtrans SA</option>
+                        <option value="OLG international Chiasso">OLG international Chiasso</option>
+                        <option value="PESA SA - Chiasso">PESA SA - Chiasso</option>
+                        <option value="Piffaretti & Olivieri SA">Piffaretti & Olivieri SA</option>
+                        <option value="PostLogistic AG">PostLogistic AG</option>
+                        <option value="Progress Transport SA">Progress Transport SA</option>
+                        <option value="Rolo SA">Rolo SA</option>
+                        <option value="Rolo SA - export">Rolo SA - export</option>
+                        <option value="Rolo SA - import">Rolo SA - import</option>
+                        <option value="Sieber Transport SA">Sieber Transport SA</option>
+                        <option value="Spedimar Sagl - Chiasso">Spedimar Sagl - Chiasso</option>
+                        <option value="Sprinter SA">Sprinter SA</option>
+                        <option value="Trans Service SA - Chiasso">Trans Service SA - Chiasso</option>
+                        <option value="WeDeclare">WeDeclare</option>
+                        <option value="Zürcher Trasporti SA">Zürcher Trasporti SA</option>
+                        <option value="Altro">Altro...</option>
+                    </select>
+                </div>
+            </div>
+            <div class="grid-row">
+                <div class="grid-item"><label>Status</label>
+                    <select id="v_status"></select>
+                </div>
+                <div class="grid-item" style="border-color: #2980b9;">
+                    <label style="background-color: #d6eaf8; color:#2980b9;">
+                        <span id="label-extra-risultato">...</span>
+                        <button id="btn-toggle-extra" class="btn-mini-modifica" style="display:none;" onclick="toggleModificaExtra()" title="Modifica Testo">✏️</button>
+                    </label>
+                    <input type="text" id="v_campo_extra">
+                    <select id="v_campo_extra_list" class="listbox-multipla" size="3" multiple disabled></select>
+                </div>
+            </div>
+
+            <div class="grid-row" id="blocco-speciali-risultato" style="display:none; border: 2px dashed #f39c12; padding: 5px;">
+                <div class="grid-item"><label style="background-color: #fcf3cf; color: #d35400;">Nr. Conto</label><input type="text" id="v_nr_conto"></div>
+                <div class="grid-item"><label style="background-color: #fcf3cf; color: #d35400;">Importo garantito (Fr)</label><input type="number" step="0.01" id="v_importo_garantito"></div>
+            </div>
+            
+            <div class="button-section">
+                <button id="btn-salva-modifica" class="btn-main" style="background-color: #f39c12; color: white;" onclick="inviaDati('modifica')">💾 Salva Modifiche</button>
+                <button class="btn-main" style="background-color: #27ae60; color: white;" onclick="esportaCSV()">📥 Esporta CSV</button>
+                <div id="msg-modifica" class="messaggio-esito" style="width: 100%;"></div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw4oSO5i5uyFDa5AXz-ji81TpBHWNnFNbaDpJM466QgZDeZ8SUppGqiEiaEFiLeYi2VsQ/exec";
+
+    let foglioCorrente = '11.73import'; 
+
+    const contiPartner = {
+        "Altro": "3224-9",
+        "Ansali SA - Chiasso Strada": "4011-3",
+        "Astra Trasporti Int. SA": "4001-4",
+        "B & A Customs SA": "15694-3",
+        "B&G International Sagl": "15858-9",
+        "Carugati SA": "4073-3",
+        "Cippà": "65-2222",
+        "Cippà Trasporti SA": "4084-0",
+        "Cippà Trasporti SA - Centralino": "4084-0",
+        "Extrasped SA": "2909-2",
+        "Focus 93 GmBh": "1359-9",
+        "Four Transport": "18616-2",
+        "Franzosini SA": "18926-2",
+        "Franzosini SA - sede": "18926-2",
+        "Gasped Trasporti Int. SA": "16551-8",
+        "Gerlach AG": "7827-4",
+        "Gerlach AG - cellulare": "4824-9",
+        "Globus": "4127-7",
+        "Globus Trasporti Int. SA": "4127-7",
+        "Gondrand SA - Import e Export": "4124-4",
+        "Intervia Transport SA": "4146-7",
+        "Intex SA": "4144-2",
+        "Jacam Import Export SA": "9615-4",
+        "Lems Le Prese": "5701-0",
+        "Licaf Spedizioni Sagl": "4311-4",
+        "MB Express": "2141-8",
+        "MC Trans SA": "3516-7",
+        "Newtrans SA": "5635-6",
+        "OLG international Chiasso": "14886-3",
+        "PESA SA - Chiasso": "5175-5",
+        "Piffaretti & Olivieri SA": "4239-0",
+        "PostLogistic AG": "9405-4",
+        "Progress Transport SA": "4247-2",
+        "Rolo SA": "4357-0",
+        "Rolo SA - export": "4357-0",
+        "Rolo SA - import": "4357-0",
+        "Sieber Transport SA": "1720-2",
+        "Spedimar Sagl - Chiasso": "4123-6",
+        "Sprinter SA": "9262-9",
+        "Trans Service SA - Chiasso": "4238-2",
+        "WeDeclare": "20537-5",
+        "Zürcher Trasporti SA": "7491-7"
+    };
+
+    function compilaContoAutomatico(prefisso) {
+        if (foglioCorrente === "11.73import" || foglioCorrente === "11.71import" || foglioCorrente === "1173import") {
+            let nomeSelezionato = document.getElementById(prefisso + 'partner_dogana').value;
+            let campoConto = document.getElementById(prefisso + 'nr_conto');
+            if (nomeSelezionato && contiPartner[nomeSelezionato]) {
+                campoConto.value = contiPartner[nomeSelezionato];
+            } else {
+                campoConto.value = "";
+            }
+        }
+    }
+
+    function controllaUtenteObbligatorio() {
+        let nomeUtente = localStorage.getItem("utenteDoganaMulti");
+        while (!nomeUtente || nomeUtente.trim() === "") {
+            nomeUtente = prompt("Inserisci il tuo Nome Utente per accedere al gestionale (Obbligatorio):");
+            if (nomeUtente && nomeUtente.trim() !== "") {
+                localStorage.setItem("utenteDoganaMulti", nomeUtente.trim());
+            }
+        }
+        let campoUtente = document.getElementById("n_utente");
+        if (campoUtente) {
+            campoUtente.value = nomeUtente.trim();
+        }
+    }
+
+    window.onload = function() { 
+        controllaUtenteObbligatorio();
+        selezionaFoglio('11.73import'); 
+    };
+
+    function calcolaScadenza(prefisso) {
+        let dataInput = document.getElementById(prefisso + 'data_allestimento').value;
+        if (!dataInput) {
+            let campoScadenza = document.getElementById(prefisso + 'data_scadenza');
+            if (campoScadenza) campoScadenza.value = "";
+            return; 
+        }
+        let parti = dataInput.split('-');
+        let anno = parseInt(parti[0], 10);
+        let mese = parti[1];
+        let giorno = parti[2];
+        if (foglioCorrente === '11.73import' || foglioCorrente === '1173export') {
+            anno += 2; 
+        } else if (foglioCorrente === '11.71import') {
+            anno += 1; 
+        } else {
+            return;
+        }
+        document.getElementById(prefisso + 'data_scadenza').value = anno + "-" + mese + "-" + giorno;
+    }
+
+    function selezionaFoglio(nomeFoglio) {
+        foglioCorrente = nomeFoglio;
+        
+        document.querySelectorAll('.sidebar .nav-btn').forEach(b => b.classList.remove('attivo'));
+        document.getElementById('btn-foglio-' + nomeFoglio).classList.add('attivo');
+        document.getElementById('display-titolo-foglio').innerText = "Formulario: " + nomeFoglio;
+
+        let btnReport = document.getElementById('btn-report');
+        if (nomeFoglio === '11.73import') {
+            btnReport.style.display = 'inline-block';
+        } else {
+            btnReport.style.display = 'none';
+        }
+
+        let nomeCampoExtra = "";
+        if (nomeFoglio === '11.73import') {
+            nomeCampoExtra = "Scaricato con 11.87 export n°";
+        } else if (nomeFoglio === '1173export') {
+            nomeCampoExtra = "Scaricato con 11.87 import n°";
+        } else if (nomeFoglio === '11.71import') {
+            nomeCampoExtra = "Scaricato con 11.86 Export n°";
+        } else if (nomeFoglio === '1187import') {
+            nomeCampoExtra = "1173 export";
+        } else if (nomeFoglio === '1187export') {
+            nomeCampoExtra = "1173 import";
+        } else if (nomeFoglio === '1186export') {
+            nomeCampoExtra = "1171 import";
+        } else {
+            nomeCampoExtra = "Riferimento";
+        }
+        
+        document.getElementById('label-extra-nuovo').innerText = nomeCampoExtra;
+        document.getElementById('label-extra-cerca').innerText = "Cerca " + nomeCampoExtra;
+        document.getElementById('label-extra-risultato').innerText = nomeCampoExtra;
+
+        let is117 = nomeFoglio.startsWith("11.7") || nomeFoglio.startsWith("117");
+        let is118 = nomeFoglio.startsWith("11.8") || nomeFoglio.startsWith("118");
+        
+        let optionsStatusHTML = '<option value="">-- Seleziona --</option>';
+        if (is117) {
+            optionsStatusHTML += '<option value="Aperto">Aperto</option><option value="Chiuso">Chiuso</option>';
+        } else {
+            optionsStatusHTML += '<option value="Parziale">Parziale</option><option value="Completo">Completo</option>';
+        }
+        document.getElementById('n_status').innerHTML = optionsStatusHTML;
+        document.getElementById('v_status').innerHTML = optionsStatusHTML;
+
+        let isSpeciale = (nomeFoglio === "11.73import" || nomeFoglio === "1173import" || nomeFoglio === "11.71import");
+        document.getElementById('blocco-speciali-nuovo').style.display = isSpeciale ? "flex" : "none";
+        document.getElementById('blocco-speciali-risultato').style.display = isSpeciale ? "flex" : "none";
+
+        document.getElementById('blocco-scadenza-nuovo').style.display = is118 ? "none" : "flex";
+        document.getElementById('blocco-scadenza-risultato').style.display = is118 ? "none" : "flex";
+
+        cambiaAzione('nuovo');
+        svuotaTutto();
+    }
+
+    function cambiaAzione(azione) {
+        document.querySelectorAll('.pagina').forEach(p => p.classList.remove('attiva'));
+        document.querySelectorAll('.action-btn').forEach(b => b.classList.remove('attivo'));
+        document.getElementById('scheda-' + azione).classList.add('attiva');
+        document.getElementById('btn-azione-' + azione).classList.add('attivo');
+    }
+
+    function svuotaTutto() {
+        let oggi = new Date();
+        let yyyy = oggi.getFullYear();
+        let mm = String(oggi.getMonth() + 1).padStart(2, '0');
+        let dd = String(oggi.getDate()).padStart(2, '0');
+        document.getElementById('n_data_allestimento').value = yyyy + "-" + mm + "-" + dd;
+        
+        document.getElementById('n_partner_dogana').value = '';
+        document.getElementById('n_status').value = '';
+        document.getElementById('n_campo_extra').value = '';
+        document.getElementById('n_nr_conto').value = '';
+        document.getElementById('n_importo_garantito').value = '';
+        document.getElementById('display-numero-nuovo').innerText = '...';
+        document.getElementById('msg-nuovo').innerText = '';
+        document.getElementById('btn-salva-nuovo').disabled = false;
+        document.getElementById('btn-salva-nuovo').innerText = "Salva Formulario";
+        
+        document.getElementById('msg-modifica').innerText = '';
+        document.getElementById('area-risultati-maschera').style.display = 'none';
+        document.getElementById('msg-cerca').innerText = '';
+        
+        calcolaScadenza('n_');
+    }
+
+    // =========================================================
+    // TRAPPOLA PER ERRORI: NUOVO GENERATORE REPORT
+    // =========================================================
+    async function generaReportPDF() {
+        const btn = document.getElementById('btn-report');
+        btn.disabled = true;
+        btn.innerText = "⏳ Controllo in corso...";
+
+        try {
+            const risposta = await fetch(GOOGLE_SCRIPT_URL, { 
+                method: "POST", 
+                headers: { "Content-Type": "text/plain;charset=utf-8" }, 
+                body: JSON.stringify({ azione: "report", nomeFoglio: foglioCorrente }), 
+                redirect: "follow" 
+            });
+            
+            // 1. INVECE DI LEGGERE SUBITO IL FORMATO JSON, LEGGIAMO IL TESTO GREZZO 
+            const testoPuro = await risposta.text();
+            
+            let risultato;
+            try {
+                // 2. Ora proviamo a convertire il testo grezzo in formato JSON
+                risultato = JSON.parse(testoPuro);
+            } catch (erroreJSON) {
+                // 3. SE FALLISCE IL PARSING, CATTURIAMO L'ERRORE E LO MOSTRIAMO!
+                alert("🕵️‍♂️ DETECTIVE MODE!\n\nIl browser si è connesso a Google, ma Google non ha restituito i dati del Report. Ha risposto con questo testo imprevisto:\n\n" + testoPuro.substring(0, 300) + "\n\n(Se vedi del codice HTML o una pagina vuota, significa che su Google Apps Script devi ancora creare una 'Nuova Versione' del Deployment!)");
+                
+                btn.disabled = false;
+                btn.innerText = "📊 Report Aperte (PDF)";
+                return; // Fermiamo tutto
+            }
+
+            if (risultato.successo) {
+                let dati = risultato.datiReport;
+                if(dati.length === 0) {
+                    alert("Nessun formulario Aperto trovato in questo foglio!");
+                    btn.disabled = false; btn.innerText = "📊 Report Aperte (PDF)";
+                    return;
+                }
+
+                let dataOggi = new Date().toLocaleDateString('it-CH');
+                let htmlReport = `
+                    <!DOCTYPE html>
+                    <html lang="it">
+                    <head>
+                        <meta charset="UTF-8">
+                        <title>Report Pratiche Aperte - 11.73 Import</title>
+                        <style>
+                            body { font-family: 'Segoe UI', Arial, sans-serif; color: #333; margin: 40px; }
+                            h1 { color: #2c3e50; text-align: center; border-bottom: 2px solid #2980b9; padding-bottom: 10px; margin-bottom: 5px; }
+                            .sottotitolo { text-align: center; color: #7f8c8d; font-style: italic; margin-bottom: 30px; }
+                            table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                            th, td { border: 1px solid #bdc3c7; padding: 10px 15px; text-align: left; }
+                            th { background-color: #2980b9; color: white; font-weight: bold; }
+                            tr:nth-child(even) { background-color: #f9f9f9; }
+                            .importo { text-align: right; font-weight: bold; color: #d35400; }
+                            .centro { text-align: center; }
+                            .riga-totale { font-size: 1.1rem; background-color: #ecf0f1; font-weight: bold; text-align: right; }
+                        </style>
+                    </head>
+                    <body>
+                        <h1>Tabella Pivot: Formulari 11.73 Import (Aperti)</h1>
+                        <div class="sottotitolo">Generato il: ${dataOggi} - Ufficio Doganale Chiasso</div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Partner Dogana</th>
+                                    <th>Nr. Conto</th>
+                                    <th class="centro">Numero Pratiche</th>
+                                    <th class="importo">Importo Garantito (CHF)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+
+                let totaleAssoluto = 0;
+                let conteggioTotale = 0;
+
+                dati.forEach(riga => {
+                    totaleAssoluto += riga.totale;
+                    conteggioTotale += riga.conteggio;
+                    let totaleFormattato = riga.totale.toLocaleString('de-CH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                    htmlReport += `
+                        <tr>
+                            <td>${riga.partner}</td>
+                            <td>${riga.conto}</td>
+                            <td class="centro">${riga.conteggio}</td>
+                            <td class="importo">${totaleFormattato}</td>
+                        </tr>
+                    `;
+                });
+
+                let totaleAssolutoFormattato = totaleAssoluto.toLocaleString('de-CH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
+                htmlReport += `
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="2" class="riga-totale">TOTALE COMPLESSIVO:</td>
+                                    <td class="riga-totale centro">${conteggioTotale}</td>
+                                    <td class="riga-totale importo" style="color: #c0392b;">${totaleAssolutoFormattato}</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </body>
+                    </html>
+                `;
+
+                let finestraReport = window.open('', '_blank');
+                finestraReport.document.write(htmlReport);
+                finestraReport.document.close();
+
+                setTimeout(() => {
+                    finestraReport.print();
+                }, 500);
+
+            } else {
+                alert("Errore dal server: " + risultato.messaggio);
+            }
+        } catch (e) {
+            alert("Errore di rete puro: " + e.message);
+        }
+        
+        btn.disabled = false;
+        btn.innerText = "📊 Report Aperte (PDF)";
+    }
+
+    async function inviaDati(tipo) {
+        const prefisso = (tipo === 'nuovo') ? 'n_' : 'v_';
+        const btn = document.getElementById('btn-salva-' + tipo);
+        const msg = document.getElementById('msg-' + tipo);
+        const testoOriginaleBottone = (tipo === 'nuovo') ? "Salva Formulario" : "💾 Salva Modifiche";
+        
+        let rawAll = document.getElementById(prefisso+'data_allestimento').value;
+        let rawScad = document.getElementById(prefisso+'data_scadenza') ? document.getElementById(prefisso+'data_scadenza').value : "";
+        let dAll = rawAll ? rawAll.split('-').reverse().join('/') : "";
+        let dScad = rawScad ? rawScad.split('-').reverse().join('/') : "";
+
+        let datiDaSpedire = {
+            azione: tipo,
+            nomeFoglio: foglioCorrente,
+            dataAllestimento: dAll,
+            dataScadenza: dScad,
+            partnerDogana: document.getElementById(prefisso+'partner_dogana').value,
+            status: document.getElementById(prefisso+'status').value,
+            campoExtra: document.getElementById(prefisso+'campo_extra').value,
+            nrConto: document.getElementById(prefisso+'nr_conto') ? document.getElementById(prefisso+'nr_conto').value : "",
+            importoGarantito: document.getElementById(prefisso+'importo_garantito') ? document.getElementById(prefisso+'importo_garantito').value : "",
+            utente: document.getElementById('n_utente').value 
+        };
+
+        let is118 = (foglioCorrente.startsWith("11.8") || foglioCorrente.startsWith("118"));
+
+        if (is118 && datiDaSpedire.campoExtra && datiDaSpedire.campoExtra.trim() !== "") {
+            let confermaChiasso = confirm("ATTENZIONE:\nIl formulario di riferimento (" + datiDaSpedire.campoExtra + ") è stato allestito dalla Dogana di Chiasso?\n\n- Premi 'OK' se è di Chiasso (il collegamento verrà effettuato).\n- Premi 'Annulla' se è di un altro ufficio (il riferimento incrociato verrà ignorato e il campo svuotato).");
+            if (!confermaChiasso) {
+                datiDaSpedire.campoExtra = "";
+                document.getElementById(prefisso+'campo_extra').value = "";
+            }
+        }
+
+        if (tipo === 'nuovo') {
+            if (!datiDaSpedire.dataAllestimento || (!is118 && !datiDaSpedire.dataScadenza) || !datiDaSpedire.partnerDogana || !datiDaSpedire.status) {
+                msg.style.color = "red"; msg.innerText = "Compila tutti i campi con l'asterisco rosso (*)!"; return; 
+            }
+            localStorage.setItem("utenteDoganaMulti", datiDaSpedire.utente);
+        }
+
+        if (tipo === 'modifica') {
+            datiDaSpedire.numeroDaModificare = document.getElementById('v_numero').innerText;
+            if (!datiDaSpedire.numeroDaModificare || datiDaSpedire.numeroDaModificare === "...") { msg.style.color="red"; msg.innerText = "Nessun record caricato da modificare!"; return; }
+        }
+
+        btn.disabled = true; 
+        btn.innerText = "Attendere..."; 
+        msg.innerHTML = "";
+
+        try {
+            const risposta = await fetch(GOOGLE_SCRIPT_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(datiDaSpedire), redirect: "follow" });
+            const risultato = await risposta.json();
+
+            if (risultato.successo) {
+                msg.style.color = "green"; msg.innerText = risultato.messaggio;
+                if(tipo === 'nuovo') { 
+                    document.getElementById("display-numero-nuovo").innerText = risultato.numeroAssegnato; 
+                    btn.disabled = true; btn.innerText = "Record Salvato"; 
+                    setTimeout(() => { svuotaTutto(); msg.innerText = "Pronto per il prossimo!"; }, 3000); 
+                } else {
+                    btn.disabled = false; btn.innerText = testoOriginaleBottone;
+                    if (document.getElementById("v_campo_extra").style.display === 'block') {
+                        toggleModificaExtra();
+                        costruisciListbox();
+                    }
+                }
+            } else { 
+                msg.style.color = "red"; 
+                msg.innerText = risultato.messaggio; 
+                btn.disabled = false; 
+                btn.innerText = testoOriginaleBottone;
+            }
+        } catch (e) { 
+            msg.style.color = "red"; 
+            msg.innerText = "Errore di connessione."; 
+            btn.disabled = false; 
+            btn.innerText = testoOriginaleBottone;
+        }
+    }
+
+    let risultatiRicerca = []; let indiceCorrente = 0;    
+    
+    async function avviaRicerca() {
+        const btn = document.getElementById("btn-cerca");
+        const msg = document.getElementById("msg-cerca");
+        const area = document.getElementById("area-risultati-maschera");
+        const datiSpediti = { azione: "cerca", nomeFoglio: foglioCorrente, cercaNumero: document.getElementById("c_numero").value, cercaPartnerDogana: document.getElementById("c_partner_dogana").value, cercaCampoExtra: document.getElementById("c_campo_extra").value };
+        
+        btn.disabled = true; btn.innerText = "Ricerca in corso..."; msg.innerHTML = ""; area.style.display = "none"; 
+        
+        try {
+            const risposta = await fetch(GOOGLE_SCRIPT_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(datiSpediti), redirect: "follow" });
+            const risultato = await risposta.json();
+            
+            if (risultato.successo) {
+                risultatiRicerca = risultato.risultati;
+                if (risultatiRicerca.length === 0) { msg.innerHTML = "<span style='color:orange'>Nessun risultato trovato.</span>"; } 
+                else { msg.innerHTML = ""; indiceCorrente = 0; mostraRecord(); area.style.display = "block"; }
+            } else { msg.style.color = "red"; msg.innerText = risultato.messaggio; }
+        } catch (e) { msg.style.color = "red"; msg.innerText = "Errore di rete."; }
+        btn.disabled = false; btn.innerText = "Trova Formulari";
+    }
+
+    function toggleModificaExtra() {
+        let inputExtra = document.getElementById("v_campo_extra");
+        let listboxExtra = document.getElementById("v_campo_extra_list");
+        let btnMatita = document.getElementById("btn-toggle-extra");
+
+        if (inputExtra.style.display === 'none') {
+            inputExtra.style.display = 'block';
+            listboxExtra.style.display = 'none';
+            btnMatita.innerText = "❌"; 
+            btnMatita.title = "Annulla modifica testo";
+        } else {
+            inputExtra.style.display = 'none';
+            listboxExtra.style.display = 'block';
+            btnMatita.innerText = "✏️";
+            btnMatita.title = "Modifica Testo";
+            inputExtra.value = risultatiRicerca[indiceCorrente].campoExtra;
+        }
+    }
+
+    function costruisciListbox() {
+        let inputExtra = document.getElementById("v_campo_extra");
+        let listboxExtra = document.getElementById("v_campo_extra_list");
+        
+        let valPulito = inputExtra.value.replace(/^'/, '');
+        
+        let arrayValori = valPulito ? valPulito.split('/') : [];
+        let opzioniHTML = "";
+        arrayValori.forEach(v => {
+            if(v.trim()) opzioniHTML += `<option value="${v.trim()}">${v.trim()}</option>`;
+        });
+        if(opzioniHTML === "") opzioniHTML = "<option disabled>Nessuno scarico</option>";
+        listboxExtra.innerHTML = opzioniHTML;
+        
+        risultatiRicerca[indiceCorrente].campoExtra = inputExtra.value;
+    }
+
+    function mostraRecord() {
+        const rec = risultatiRicerca[indiceCorrente]; 
+        
+        function formattaData(dataIta) { if(!dataIta) return ""; let p = dataIta.split('/'); return p.length===3 ? p[2]+"-"+p[1]+"-"+p[0] : dataIta; }
+
+        document.getElementById("v_numero").innerText = rec.numero;
+        document.getElementById("v_data_allestimento").value = formattaData(rec.dataAll);
+        document.getElementById("v_data_scadenza").value = formattaData(rec.dataScad);
+        
+        let selPartner = document.getElementById("v_partner_dogana");
+        let opzioniPartner = Array.from(selPartner.options).map(opt => opt.value);
+        if (rec.partnerDogana && !opzioniPartner.includes(rec.partnerDogana)) {
+            selPartner.add(new Option(rec.partnerDogana, rec.partnerDogana));
+        }
+        selPartner.value = rec.partnerDogana;
+
+        let selStatus = document.getElementById("v_status");
+        let opzioniStatus = Array.from(selStatus.options).map(opt => opt.value);
+        if (rec.status && !opzioniStatus.includes(rec.status)) {
+            selStatus.add(new Option(rec.status, rec.status));
+        }
+        selStatus.value = rec.status;
+
+        let inputExtra = document.getElementById("v_campo_extra");
+        let listboxExtra = document.getElementById("v_campo_extra_list");
+        let btnMatita = document.getElementById("btn-toggle-extra");
+        
+        inputExtra.value = rec.campoExtra; 
+        
+        if (foglioCorrente.startsWith("11.7") || foglioCorrente.startsWith("117")) {
+            inputExtra.style.display = 'none';
+            listboxExtra.style.display = 'block';
+            btnMatita.style.display = 'inline-block'; 
+            btnMatita.innerText = "✏️";
+            
+            costruisciListbox();
+        } else {
+            inputExtra.style.display = 'block';
+            listboxExtra.style.display = 'none';
+            btnMatita.style.display = 'none'; 
+        }
+
+        document.getElementById("v_dataReg").innerText = rec.dataReg;
+        document.getElementById("v_oraReg").innerText = rec.oraReg;
+        document.getElementById("v_utente").innerText = rec.utente;
+
+        let isSpeciale = (foglioCorrente === "11.73import" || foglioCorrente === "1173import" || foglioCorrente === "11.71import");
+        if(isSpeciale) {
+            document.getElementById("v_nr_conto").value = rec.nrConto;
+            document.getElementById("v_importo_garantito").value = rec.importoGarantito;
+        }
+
+        document.getElementById("testo-contatore").innerText = `Record ${indiceCorrente + 1} di ${risultatiRicerca.length}`;
+        document.getElementById("btn-indietro").disabled = (indiceCorrente === 0);
+        document.getElementById("btn-avanti").disabled = (indiceCorrente === risultatiRicerca.length - 1);
+        
+        document.getElementById('msg-modifica').innerText = '';
+    }
+    
+    function vaiAvanti() { if (indiceCorrente < risultatiRicerca.length - 1) { indiceCorrente++; mostraRecord(); } }
+    function vaiIndietro() { if (indiceCorrente > 0) { indiceCorrente--; mostraRecord(); } }
+
+    function esportaCSV() {
+        if (risultatiRicerca.length === 0) { alert("Nessun record da esportare!"); return; }
+        
+        let isSpeciale = (foglioCorrente === "11.73import" || foglioCorrente === "1173import" || foglioCorrente === "11.71import");
+        let is118 = (foglioCorrente.startsWith("11.8") || foglioCorrente.startsWith("118"));
+        
+        let etichettaExtra = document.getElementById('label-extra-nuovo').innerText;
+        let contenutoCSV = "";
+        
+        if (isSpeciale) {
+            contenutoCSV = `Nr. Progressivo;Data Allestimento;Data Scadenza;Partner Dogana;Status;${etichettaExtra};Data Registrazione;Nr. Conto;Importo garantito;Ora;Utente\n`;
+            risultatiRicerca.forEach(rec => {
+                let riga = [ rec.numero, rec.dataAll, rec.dataScad, rec.partnerDogana, rec.status, rec.campoExtra, rec.dataReg, rec.nrConto, rec.importoGarantito, rec.oraReg, rec.utente ];
+                contenutoCSV += riga.join(";") + "\n";
+            });
+        } else if (is118) {
+            contenutoCSV = `Nr. Progressivo;Data Allestimento;Partner Dogana;Status;${etichettaExtra};Data Registrazione;Ora;Utente\n`;
+            risultatiRicerca.forEach(rec => {
+                let riga = [ rec.numero, rec.dataAll, rec.partnerDogana, rec.status, rec.campoExtra, rec.dataReg, rec.oraReg, rec.utente ];
+                contenutoCSV += riga.join(";") + "\n";
+            });
+        } else {
+            contenutoCSV = `Nr. Progressivo;Data Allestimento;Data Scadenza;Partner Dogana;Status;${etichettaExtra};Data Registrazione;Ora;Utente\n`;
+            risultatiRicerca.forEach(rec => {
+                let riga = [ rec.numero, rec.dataAll, rec.dataScad, rec.partnerDogana, rec.status, rec.campoExtra, rec.dataReg, rec.oraReg, rec.utente ];
+                contenutoCSV += riga.join(";") + "\n";
+            });
+        }
+        
+        const fileVirtuale = new Blob([contenutoCSV], { type: 'text/csv;charset=utf-8;' });
+        const linkDownload = document.createElement("a");
+        const urlFile = URL.createObjectURL(fileVirtuale);
+        linkDownload.setAttribute("href", urlFile);
+        linkDownload.setAttribute("download", `Estrazione_${foglioCorrente}.csv`); 
+        linkDownload.style.visibility = 'hidden';
+        document.body.appendChild(linkDownload);
+        linkDownload.click(); 
+        document.body.removeChild(linkDownload);
+    }
+</script>
+</body>
+</html>
