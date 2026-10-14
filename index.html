@@ -22,7 +22,6 @@
         .action-btn:hover { background-color: #e0e0e0; }
         .action-btn.attivo { background-color: #2980b9; color: white; border-color: #2980b9;}
         
-        /* STILE DEL NUOVO BOTTONE REPORT */
         #btn-report { background-color: #8e44ad; color: white; border-color: #732d91; display: none; }
         #btn-report:hover { background-color: #9b59b6; }
 
@@ -103,51 +102,8 @@
             <div class="grid-item"><label>Data Allestimento <span class="obbligatorio">*</span></label><input type="date" id="n_data_allestimento" onchange="calcolaScadenza('n_')"></div>
             <div class="grid-item" id="blocco-scadenza-nuovo"><label>Data Scadenza <span class="obbligatorio">*</span></label><input type="date" id="n_data_scadenza"></div>
             <div class="grid-item"><label>Partner Dogana <span class="obbligatorio">*</span></label>
-                <select id="n_partner_dogana" onchange="compilaContoAutomatico('n_')">
-                    <option value="">-- Seleziona --</option>
-                    <option value="Ansali SA - Chiasso Strada">Ansali SA - Chiasso Strada</option>
-                    <option value="Astra Trasporti Int. SA">Astra Trasporti Int. SA</option>
-                    <option value="B & A Customs SA">B & A Customs SA</option>
-                    <option value="B&G International Sagl">B&G International Sagl</option>
-                    <option value="Carugati SA">Carugati SA</option>
-                    <option value="Cippà">Cippà</option>
-                    <option value="Cippà Trasporti SA">Cippà Trasporti SA</option>
-                    <option value="Cippà Trasporti SA - Centralino">Cippà Trasporti SA - Centralino</option>
-                    <option value="Extrasped SA">Extrasped SA</option>
-                    <option value="Focus 93 GmBh">Focus 93 GmBh</option>
-                    <option value="Four Transport">Four Transport</option>
-                    <option value="Franzosini SA">Franzosini SA</option>
-                    <option value="Franzosini SA - sede">Franzosini SA - sede</option>
-                    <option value="Gasped Trasporti Int. SA">Gasped Trasporti Int. SA</option>
-                    <option value="Gerlach AG">Gerlach AG</option>
-                    <option value="Gerlach AG - cellulare">Gerlach AG - cellulare</option>
-                    <option value="Globus">Globus</option>
-                    <option value="Globus Trasporti Int. SA">Globus Trasporti Int. SA</option>
-                    <option value="Gondrand SA - Import e Export">Gondrand SA - Import e Export</option>
-                    <option value="Intervia Transport SA">Intervia Transport SA</option>
-                    <option value="Intex SA">Intex SA</option>
-                    <option value="Jacam Import Export SA">Jacam Import Export SA</option>
-                    <option value="Lems Le Prese">Lems Le Prese</option>
-                    <option value="Licaf Spedizioni Sagl">Licaf Spedizioni Sagl</option>
-                    <option value="MB Express">MB Express</option>
-                    <option value="MC Trans SA">MC Trans SA</option>
-                    <option value="Newtrans SA">Newtrans SA</option>
-                    <option value="OLG international Chiasso">OLG international Chiasso</option>
-                    <option value="PESA SA - Chiasso">PESA SA - Chiasso</option>
-                    <option value="Piffaretti & Olivieri SA">Piffaretti & Olivieri SA</option>
-                    <option value="PostLogistic AG">PostLogistic AG</option>
-                    <option value="Progress Transport SA">Progress Transport SA</option>
-                    <option value="Rolo SA">Rolo SA</option>
-                    <option value="Rolo SA - export">Rolo SA - export</option>
-                    <option value="Rolo SA - import">Rolo SA - import</option>
-                    <option value="Sieber Transport SA">Sieber Transport SA</option>
-                    <option value="Spedimar Sagl - Chiasso">Spedimar Sagl - Chiasso</option>
-                    <option value="Sprinter SA">Sprinter SA</option>
-                    <option value="Trans Service SA - Chiasso">Trans Service SA - Chiasso</option>
-                    <option value="WeDeclare">WeDeclare</option>
-                    <option value="Zürcher Trasporti SA">Zürcher Trasporti SA</option>
-                    <option value="Altro">Altro...</option>
-                </select>
+                <!-- Popolato dinamicamente da JS -->
+                <select id="n_partner_dogana" onchange="compilaContoAutomatico('n_')"></select>
             </div>
         </div>
         
@@ -178,51 +134,8 @@
             <div class="grid-row" style="margin-bottom: 0;">
                 <div class="grid-item"><label>Cerca Nr. Progressivo</label><input type="text" id="c_numero" placeholder="Es. 45"></div>
                 <div class="grid-item"><label>Cerca Partner Dogana</label>
-                    <select id="c_partner_dogana">
-                        <option value="">-- Tutti --</option>
-                        <option value="Ansali SA - Chiasso Strada">Ansali SA - Chiasso Strada</option>
-                        <option value="Astra Trasporti Int. SA">Astra Trasporti Int. SA</option>
-                        <option value="B & A Customs SA">B & A Customs SA</option>
-                        <option value="B&G International Sagl">B&G International Sagl</option>
-                        <option value="Carugati SA">Carugati SA</option>
-                        <option value="Cippà">Cippà</option>
-                        <option value="Cippà Trasporti SA">Cippà Trasporti SA</option>
-                        <option value="Cippà Trasporti SA - Centralino">Cippà Trasporti SA - Centralino</option>
-                        <option value="Extrasped SA">Extrasped SA</option>
-                        <option value="Focus 93 GmBh">Focus 93 GmBh</option>
-                        <option value="Four Transport">Four Transport</option>
-                        <option value="Franzosini SA">Franzosini SA</option>
-                        <option value="Franzosini SA - sede">Franzosini SA - sede</option>
-                        <option value="Gasped Trasporti Int. SA">Gasped Trasporti Int. SA</option>
-                        <option value="Gerlach AG">Gerlach AG</option>
-                        <option value="Gerlach AG - cellulare">Gerlach AG - cellulare</option>
-                        <option value="Globus">Globus</option>
-                        <option value="Globus Trasporti Int. SA">Globus Trasporti Int. SA</option>
-                        <option value="Gondrand SA - Import e Export">Gondrand SA - Import e Export</option>
-                        <option value="Intervia Transport SA">Intervia Transport SA</option>
-                        <option value="Intex SA">Intex SA</option>
-                        <option value="Jacam Import Export SA">Jacam Import Export SA</option>
-                        <option value="Lems Le Prese">Lems Le Prese</option>
-                        <option value="Licaf Spedizioni Sagl">Licaf Spedizioni Sagl</option>
-                        <option value="MB Express">MB Express</option>
-                        <option value="MC Trans SA">MC Trans SA</option>
-                        <option value="Newtrans SA">Newtrans SA</option>
-                        <option value="OLG international Chiasso">OLG international Chiasso</option>
-                        <option value="PESA SA - Chiasso">PESA SA - Chiasso</option>
-                        <option value="Piffaretti & Olivieri SA">Piffaretti & Olivieri SA</option>
-                        <option value="PostLogistic AG">PostLogistic AG</option>
-                        <option value="Progress Transport SA">Progress Transport SA</option>
-                        <option value="Rolo SA">Rolo SA</option>
-                        <option value="Rolo SA - export">Rolo SA - export</option>
-                        <option value="Rolo SA - import">Rolo SA - import</option>
-                        <option value="Sieber Transport SA">Sieber Transport SA</option>
-                        <option value="Spedimar Sagl - Chiasso">Spedimar Sagl - Chiasso</option>
-                        <option value="Sprinter SA">Sprinter SA</option>
-                        <option value="Trans Service SA - Chiasso">Trans Service SA - Chiasso</option>
-                        <option value="WeDeclare">WeDeclare</option>
-                        <option value="Zürcher Trasporti SA">Zürcher Trasporti SA</option>
-                        <option value="Altro">Altro...</option>
-                    </select>
+                    <!-- Popolato dinamicamente da JS -->
+                    <select id="c_partner_dogana"></select>
                 </div>
                 <div class="grid-item"><label style="background-color: #d6eaf8;"><span id="label-extra-cerca">...</span></label><input type="text" id="c_campo_extra" placeholder="..."></div>
             </div>
@@ -254,50 +167,8 @@
                 <div class="grid-item"><label>Data Allestimento</label><input type="date" id="v_data_allestimento" onchange="calcolaScadenza('v_')"></div>
                 <div class="grid-item" id="blocco-scadenza-risultato"><label>Data Scadenza</label><input type="date" id="v_data_scadenza"></div>
                 <div class="grid-item"><label>Partner Dogana</label>
-                    <select id="v_partner_dogana" onchange="compilaContoAutomatico('v_')">
-                        <option value="Ansali SA - Chiasso Strada">Ansali SA - Chiasso Strada</option>
-                        <option value="Astra Trasporti Int. SA">Astra Trasporti Int. SA</option>
-                        <option value="B & A Customs SA">B & A Customs SA</option>
-                        <option value="B&G International Sagl">B&G International Sagl</option>
-                        <option value="Carugati SA">Carugati SA</option>
-                        <option value="Cippà">Cippà</option>
-                        <option value="Cippà Trasporti SA">Cippà Trasporti SA</option>
-                        <option value="Cippà Trasporti SA - Centralino">Cippà Trasporti SA - Centralino</option>
-                        <option value="Extrasped SA">Extrasped SA</option>
-                        <option value="Focus 93 GmBh">Focus 93 GmBh</option>
-                        <option value="Four Transport">Four Transport</option>
-                        <option value="Franzosini SA">Franzosini SA</option>
-                        <option value="Franzosini SA - sede">Franzosini SA - sede</option>
-                        <option value="Gasped Trasporti Int. SA">Gasped Trasporti Int. SA</option>
-                        <option value="Gerlach AG">Gerlach AG</option>
-                        <option value="Gerlach AG - cellulare">Gerlach AG - cellulare</option>
-                        <option value="Globus">Globus</option>
-                        <option value="Globus Trasporti Int. SA">Globus Trasporti Int. SA</option>
-                        <option value="Gondrand SA - Import e Export">Gondrand SA - Import e Export</option>
-                        <option value="Intervia Transport SA">Intervia Transport SA</option>
-                        <option value="Intex SA">Intex SA</option>
-                        <option value="Jacam Import Export SA">Jacam Import Export SA</option>
-                        <option value="Lems Le Prese">Lems Le Prese</option>
-                        <option value="Licaf Spedizioni Sagl">Licaf Spedizioni Sagl</option>
-                        <option value="MB Express">MB Express</option>
-                        <option value="MC Trans SA">MC Trans SA</option>
-                        <option value="Newtrans SA">Newtrans SA</option>
-                        <option value="OLG international Chiasso">OLG international Chiasso</option>
-                        <option value="PESA SA - Chiasso">PESA SA - Chiasso</option>
-                        <option value="Piffaretti & Olivieri SA">Piffaretti & Olivieri SA</option>
-                        <option value="PostLogistic AG">PostLogistic AG</option>
-                        <option value="Progress Transport SA">Progress Transport SA</option>
-                        <option value="Rolo SA">Rolo SA</option>
-                        <option value="Rolo SA - export">Rolo SA - export</option>
-                        <option value="Rolo SA - import">Rolo SA - import</option>
-                        <option value="Sieber Transport SA">Sieber Transport SA</option>
-                        <option value="Spedimar Sagl - Chiasso">Spedimar Sagl - Chiasso</option>
-                        <option value="Sprinter SA">Sprinter SA</option>
-                        <option value="Trans Service SA - Chiasso">Trans Service SA - Chiasso</option>
-                        <option value="WeDeclare">WeDeclare</option>
-                        <option value="Zürcher Trasporti SA">Zürcher Trasporti SA</option>
-                        <option value="Altro">Altro...</option>
-                    </select>
+                    <!-- Popolato dinamicamente da JS -->
+                    <select id="v_partner_dogana" onchange="compilaContoAutomatico('v_')"></select>
                 </div>
             </div>
             <div class="grid-row">
@@ -334,25 +205,21 @@
 
     let foglioCorrente = '11.73import'; 
 
+    // LISTA PARTNER PULITA E SENZA DUPLICATI
     const contiPartner = {
-        "Altro": "3224-9",
         "Ansali SA - Chiasso Strada": "4011-3",
         "Astra Trasporti Int. SA": "4001-4",
         "B & A Customs SA": "15694-3",
         "B&G International Sagl": "15858-9",
         "Carugati SA": "4073-3",
-        "Cippà": "65-2222",
         "Cippà Trasporti SA": "4084-0",
-        "Cippà Trasporti SA - Centralino": "4084-0",
         "Extrasped SA": "2909-2",
         "Focus 93 GmBh": "1359-9",
         "Four Transport": "18616-2",
         "Franzosini SA": "18926-2",
-        "Franzosini SA - sede": "18926-2",
         "Gasped Trasporti Int. SA": "16551-8",
         "Gerlach AG": "7827-4",
-        "Gerlach AG - cellulare": "4824-9",
-        "Globus": "4127-7",
+        "Gerlach AG - cellulare": "4824-9", 
         "Globus Trasporti Int. SA": "4127-7",
         "Gondrand SA - Import e Export": "4124-4",
         "Intervia Transport SA": "4146-7",
@@ -369,15 +236,29 @@
         "PostLogistic AG": "9405-4",
         "Progress Transport SA": "4247-2",
         "Rolo SA": "4357-0",
-        "Rolo SA - export": "4357-0",
-        "Rolo SA - import": "4357-0",
         "Sieber Transport SA": "1720-2",
         "Spedimar Sagl - Chiasso": "4123-6",
         "Sprinter SA": "9262-9",
         "Trans Service SA - Chiasso": "4238-2",
         "WeDeclare": "20537-5",
-        "Zürcher Trasporti SA": "7491-7"
+        "Zürcher Trasporti SA": "7491-7",
+        "Altro": "3224-9"
     };
+
+    function inizializzaDropdownPartners() {
+        const chiavi = Object.keys(contiPartner).filter(k => k !== "Altro").sort();
+        chiavi.push("Altro"); 
+
+        const optionsHtmlNuovoModifica = '<option value="">-- Seleziona --</option>' + 
+            chiavi.map(p => `<option value="${p}">${p}</option>`).join('');
+            
+        const optionsHtmlCerca = '<option value="">-- Tutti --</option>' + 
+            chiavi.map(p => `<option value="${p}">${p}</option>`).join('');
+
+        document.getElementById('n_partner_dogana').innerHTML = optionsHtmlNuovoModifica;
+        document.getElementById('v_partner_dogana').innerHTML = optionsHtmlNuovoModifica;
+        document.getElementById('c_partner_dogana').innerHTML = optionsHtmlCerca;
+    }
 
     function compilaContoAutomatico(prefisso) {
         if (foglioCorrente === "11.73import" || foglioCorrente === "11.71import" || foglioCorrente === "1173import") {
@@ -406,6 +287,7 @@
     }
 
     window.onload = function() { 
+        inizializzaDropdownPartners(); 
         controllaUtenteObbligatorio();
         selezionaFoglio('11.73import'); 
     };
@@ -520,9 +402,6 @@
         calcolaScadenza('n_');
     }
 
-    // =========================================================
-    // TRAPPOLA PER ERRORI: NUOVO GENERATORE REPORT
-    // =========================================================
     async function generaReportPDF() {
         const btn = document.getElementById('btn-report');
         btn.disabled = true;
@@ -536,20 +415,17 @@
                 redirect: "follow" 
             });
             
-            // 1. INVECE DI LEGGERE SUBITO IL FORMATO JSON, LEGGIAMO IL TESTO GREZZO 
             const testoPuro = await risposta.text();
             
             let risultato;
             try {
-                // 2. Ora proviamo a convertire il testo grezzo in formato JSON
                 risultato = JSON.parse(testoPuro);
             } catch (erroreJSON) {
-                // 3. SE FALLISCE IL PARSING, CATTURIAMO L'ERRORE E LO MOSTRIAMO!
                 alert("🕵️‍♂️ DETECTIVE MODE!\n\nIl browser si è connesso a Google, ma Google non ha restituito i dati del Report. Ha risposto con questo testo imprevisto:\n\n" + testoPuro.substring(0, 300) + "\n\n(Se vedi del codice HTML o una pagina vuota, significa che su Google Apps Script devi ancora creare una 'Nuova Versione' del Deployment!)");
                 
                 btn.disabled = false;
                 btn.innerText = "📊 Report Aperte (PDF)";
-                return; // Fermiamo tutto
+                return;
             }
 
             if (risultato.successo) {
