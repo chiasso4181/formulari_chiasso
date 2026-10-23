@@ -110,6 +110,64 @@ const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw4oSO5i5uyFD
         return foglioCorrente.startsWith("11.8") || foglioCorrente.startsWith("118");
     }
 
+    /**
+     * Modale 3 scelte per fogli 11.8x.
+     * @returns {Promise<'chiasso'|'altra_dogana'|'annulla'>}
+     */
+    async function chiediConfermaChiasso(valoreRiferimento) {
+        return new Promise(function(resolve) {
+            let overlay = document.getElementById('modale-chiasso');
+            let badge = document.getElementById('modale-chiasso-riferimento');
+            let btnChiasso = document.getElementById('modale-btn-chiasso');
+            let btnAltra = document.getElementById('modale-btn-altra');
+            let btnAnnulla = document.getElementById('modale-btn-annulla');
+            let btnX = document.getElementById('modale-chiasso-x');
+            if (!overlay || !btnChiasso || !btnAltra || !btnAnnulla) {
+                resolve('annulla');
+                return;
+            }
+
+            badge.textContent = valoreRiferimento || '';
+            overlay.style.display = 'flex';
+            overlay.classList.add('modale-visibile');
+            overlay.setAttribute('aria-hidden', 'false');
+
+            function chiudi(esito) {
+                overlay.classList.remove('modale-visibile');
+                overlay.style.display = 'none';
+                overlay.setAttribute('aria-hidden', 'true');
+                btnChiasso.removeEventListener('click', onChiasso);
+                btnAltra.removeEventListener('click', onAltra);
+                btnAnnulla.removeEventListener('click', onAnnulla);
+                if (btnX) btnX.removeEventListener('click', onAnnulla);
+                overlay.removeEventListener('click', onOverlay);
+                document.removeEventListener('keydown', onKey);
+                resolve(esito);
+            }
+
+            function onChiasso() { chiudi('chiasso'); }
+            function onAltra() { chiudi('altra_dogana'); }
+            function onAnnulla() { chiudi('annulla'); }
+            function onOverlay(e) {
+                if (e.target === overlay) chiudi('annulla');
+            }
+            function onKey(e) {
+                if (e.key === 'Escape') {
+                    e.preventDefault();
+                    chiudi('annulla');
+                }
+            }
+
+            btnChiasso.addEventListener('click', onChiasso);
+            btnAltra.addEventListener('click', onAltra);
+            btnAnnulla.addEventListener('click', onAnnulla);
+            if (btnX) btnX.addEventListener('click', onAnnulla);
+            overlay.addEventListener('click', onOverlay);
+            document.addEventListener('keydown', onKey);
+            btnChiasso.focus();
+        });
+    }
+
     function isFoglio117() {
         return foglioCorrente.startsWith("11.7") || foglioCorrente.startsWith("117");
     }
@@ -546,11 +604,15 @@ const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw4oSO5i5uyFD
         let is118 = isFoglio118();
 
         if (is118 && datiDaSpedire.campoExtra && datiDaSpedire.campoExtra.trim() !== "") {
-            let confermaChiasso = confirm("ATTENZIONE:\nIl formulario di riferimento (" + datiDaSpedire.campoExtra + ") è stato allestito dalla Dogana di Chiasso?\n\n- Premi 'OK' se è di Chiasso (il collegamento verrà effettuato).\n- Premi 'Annulla' se è di un altro ufficio (il riferimento incrociato verrà ignorato e il campo svuotato).");
-            if (!confermaChiasso) {
+            let esitoChiasso = await chiediConfermaChiasso(datiDaSpedire.campoExtra);
+            if (esitoChiasso === 'annulla') {
+                return;
+            }
+            if (esitoChiasso === 'altra_dogana') {
                 datiDaSpedire.campoExtra = "";
                 document.getElementById(prefisso+'campo_extra').value = "";
             }
+            // 'chiasso' → mantieni campoExtra e prosegui
         }
 
         if (tipo === 'nuovo') {
@@ -1040,7 +1102,7 @@ const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw4oSO5i5uyFD
     }
 
     function costruisciPayloadModificaDaRecord(rec) {
-        let datiDaSpedire = {
+        return {
             azione: "modifica",
             nomeFoglio: foglioCorrente,
             numeroDaModificare: rec.numero,
@@ -1053,15 +1115,20 @@ const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw4oSO5i5uyFD
             importoGarantito: isFoglioSpeciale() ? (rec.importoGarantito || "") : "",
             utente: document.getElementById('n_utente').value || localStorage.getItem("utenteDoganaMulti") || ""
         };
+    }
 
-        if (isFoglio118() && datiDaSpedire.campoExtra && datiDaSpedire.campoExtra.trim() !== "") {
-            let confermaChiasso = confirm("ATTENZIONE:\nIl formulario di riferimento (" + datiDaSpedire.campoExtra + ") è stato allestito dalla Dogana di Chiasso?\n\n- Premi 'OK' se è di Chiasso (il collegamento verrà effettuato).\n- Premi 'Annulla' se è di un altro ufficio (il riferimento incrociato verrà ignorato e il campo svuotato).");
-            if (!confermaChiasso) {
-                datiDaSpedire.campoExtra = "";
-                rec.campoExtra = "";
-            }
+    /** @returns {Promise<'chiasso'|'altra_dogana'|'annulla'|'skip'>} */
+    async function applicaEsitoChiassoSuPayload(datiDaSpedire, rec) {
+        if (!(isFoglio118() && datiDaSpedire.campoExtra && datiDaSpedire.campoExtra.trim() !== "")) {
+            return 'skip';
         }
-        return datiDaSpedire;
+        let esito = await chiediConfermaChiasso(datiDaSpedire.campoExtra);
+        if (esito === 'annulla') return 'annulla';
+        if (esito === 'altra_dogana') {
+            datiDaSpedire.campoExtra = "";
+            if (rec) rec.campoExtra = "";
+        }
+        return esito;
     }
 
     async function salvaRigaTabella(idx) {
@@ -1069,6 +1136,8 @@ const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw4oSO5i5uyFD
         if (!rec) return;
         let msgTab = document.getElementById('msg-tabella');
         let datiDaSpedire = costruisciPayloadModificaDaRecord(rec);
+        let esitoChiasso = await applicaEsitoChiassoSuPayload(datiDaSpedire, rec);
+        if (esitoChiasso === 'annulla') return;
 
         try {
             const risposta = await fetch(GOOGLE_SCRIPT_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(datiDaSpedire), redirect: "follow" });
@@ -1099,11 +1168,16 @@ const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw4oSO5i5uyFD
         let btn = document.getElementById('btn-salva-righe-modificate');
         btn.disabled = true;
         btn.innerText = "Salvataggio...";
-        let ok = 0, err = 0;
+        let ok = 0, err = 0, skip = 0;
         for (let idx of daSalvare) {
             let rec = risultatiRicerca[idx];
             if (!rec) continue;
             let datiDaSpedire = costruisciPayloadModificaDaRecord(rec);
+            let esitoChiasso = await applicaEsitoChiassoSuPayload(datiDaSpedire, rec);
+            if (esitoChiasso === 'annulla') {
+                skip++;
+                continue;
+            }
             try {
                 const risposta = await fetch(GOOGLE_SCRIPT_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(datiDaSpedire), redirect: "follow" });
                 const risultato = await risposta.json();
@@ -1125,7 +1199,7 @@ const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw4oSO5i5uyFD
         btn.innerText = "💾 Salva Righe Modificate";
         if (msgTab) {
             msgTab.style.color = err ? "red" : "green";
-            msgTab.innerText = "Salvate: " + ok + (err ? " — Errori: " + err : "");
+            msgTab.innerText = "Salvate: " + ok + (err ? " — Errori: " + err : "") + (skip ? " — Annullate: " + skip : "");
         }
         renderTabellaRisultati();
     }

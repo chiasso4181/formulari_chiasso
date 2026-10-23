@@ -208,6 +208,25 @@
 
 </div>
 
+<div id="modale-chiasso" class="modale-overlay" style="display:none;" aria-hidden="true">
+    <div class="modale-card" role="dialog" aria-modal="true" aria-labelledby="modale-chiasso-titolo">
+        <button type="button" class="modale-chiudi" id="modale-chiasso-x" aria-label="Chiudi">×</button>
+        <h2 id="modale-chiasso-titolo">⚠️ Verifica Ufficio di Allestimento</h2>
+        <div class="modale-badge" id="modale-chiasso-riferimento"></div>
+        <p class="modale-testo">Il formulario di riferimento è stato allestito dalla Dogana di Chiasso?</p>
+        <ul class="modale-riepilogo">
+            <li><strong>OK (Chiasso)</strong> — mantieni il riferimento e collega il cross-ref</li>
+            <li><strong>Altra Dogana</strong> — salva comunque, ma senza collegamento (campo svuotato)</li>
+            <li><strong>Annulla</strong> — non inviare; i campi restano compilati</li>
+        </ul>
+        <div class="modale-azioni">
+            <button type="button" class="btn-modale btn-modale-chiasso" id="modale-btn-chiasso">✅ OK (Dogana Chiasso)</button>
+            <button type="button" class="btn-modale btn-modale-altra" id="modale-btn-altra">🏢 Altra Dogana</button>
+            <button type="button" class="btn-modale btn-modale-annulla" id="modale-btn-annulla">❌ Annulla</button>
+        </div>
+    </div>
+</div>
+
 <script src="script.js"></script>
 
 </body>

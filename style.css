@@ -143,6 +143,117 @@
 
         #area-risultati { border-top: 1px solid var(--border); padding-top: 20px; }
 
+        /* Modale conferma Chiasso (11.8x) */
+        .modale-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background: rgba(15, 23, 42, 0.55);
+            backdrop-filter: blur(2px);
+            -webkit-backdrop-filter: blur(2px);
+            box-sizing: border-box;
+        }
+        .modale-overlay.modale-visibile { display: flex; }
+        .modale-card {
+            position: relative;
+            width: 100%;
+            max-width: 480px;
+            background: #fff;
+            border-radius: 12px;
+            padding: 28px 24px 22px;
+            box-shadow: 0 20px 50px rgba(15, 23, 42, 0.28);
+            border: 1px solid #e2e8f0;
+            animation: modale-in 0.22s ease-out;
+        }
+        @keyframes modale-in {
+            from { opacity: 0; transform: translateY(12px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .modale-chiudi {
+            position: absolute;
+            top: 10px;
+            right: 12px;
+            border: none;
+            background: transparent;
+            color: #64748b;
+            font-size: 1.5rem;
+            line-height: 1;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 6px;
+        }
+        .modale-chiudi:hover { background: #f1f5f9; color: #0f172a; }
+        #modale-chiasso-titolo {
+            margin: 0 28px 14px 0;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #0f172a;
+            line-height: 1.35;
+        }
+        .modale-badge {
+            display: inline-block;
+            background: #eff6ff;
+            color: #1d4ed8;
+            border: 1px solid #93c5fd;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-weight: 700;
+            font-size: 1rem;
+            margin-bottom: 14px;
+            word-break: break-all;
+        }
+        .modale-testo {
+            margin: 0 0 12px;
+            color: #334155;
+            font-size: 1rem;
+            line-height: 1.45;
+        }
+        .modale-riepilogo {
+            margin: 0 0 20px;
+            padding-left: 18px;
+            color: #64748b;
+            font-size: 0.88rem;
+            line-height: 1.5;
+        }
+        .modale-riepilogo strong { color: #334155; }
+        .modale-azioni {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .btn-modale {
+            border: none;
+            border-radius: 8px;
+            padding: 11px 14px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            font-family: inherit;
+            transition: background 0.15s, box-shadow 0.15s;
+        }
+        .btn-modale-chiasso {
+            background: #059669;
+            color: #fff;
+            box-shadow: 0 2px 6px rgba(5, 150, 105, 0.28);
+        }
+        .btn-modale-chiasso:hover { background: #047857; }
+        .btn-modale-altra {
+            background: #f59e0b;
+            color: #fff;
+            box-shadow: 0 2px 6px rgba(252, 211, 77, 0.35);
+        }
+        .btn-modale-altra:hover { background: #d97706; }
+        .btn-modale-annulla {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fecaca;
+        }
+        .btn-modale-annulla:hover { background: #fecaca; }
+
         @media (max-width: 768px) {
             body { flex-direction: column; overflow: auto; height: auto; }
             .sidebar { width: 100%; flex-direction: row; flex-wrap: wrap; padding: 10px; justify-content: space-around; position: relative; }
