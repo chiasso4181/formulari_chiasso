@@ -335,11 +335,11 @@
             .nav-btn { flex: 1 1 30%; text-align: center; padding: 8px 5px; font-size: 0.85rem; margin: 2px; border: none; border-bottom: 3px solid transparent; border-left: none; }
             .nav-btn.attivo { border-left: none; border-bottom: 3px solid var(--accent); }
             .top-action-bar { flex-direction: column; gap: 10px; text-align: center; }
-            .main-content { padding: 12px; overflow-y: visible; }
+            .main-content { padding: 12px 14px; overflow-y: visible; }
             .grid-row { flex-direction: column; gap: 12px; }
             .header-section { flex-direction: column; align-items: flex-start; gap: 10px; }
             .titolo-box { width: auto; max-width: 180px; }
             .pagina { padding: 18px; }
-            table.excel-table .filtri-riga th { top: 28px; }
+            #scheda-cerca { padding: 12px 14px; }
             .meta-registrazione { text-align: left; }
         }
