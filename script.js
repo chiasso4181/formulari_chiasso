@@ -237,11 +237,11 @@ const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw4oSO5i5uyFD
     function getColonneTabella() {
         let etichettaExtra = getEtichettaExtra();
         let cols = [
-            { key: "numero", label: "Nr. Progressivo", tipo: "numero" },
-            { key: "dataAll", label: "Data Allestimento", tipo: "data" },
+            { key: "numero", label: "N° Prog.", tipo: "numero" },
+            { key: "dataAll", label: "Allestimento", tipo: "data" },
         ];
         if (!isFoglio118()) {
-            cols.push({ key: "dataScad", label: "Data Scadenza", tipo: "data" });
+            cols.push({ key: "dataScad", label: "Scadenza", tipo: "data" });
         }
         cols.push(
             { key: "partnerDogana", label: "Partner Dogana", tipo: "testo" },
@@ -251,7 +251,7 @@ const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw4oSO5i5uyFD
         if (isFoglioSpeciale()) {
             cols.push(
                 { key: "nrConto", label: "Nr. Conto", tipo: "testo" },
-                { key: "importoGarantito", label: "Importo Garantito", tipo: "importo" }
+                { key: "importoGarantito", label: "Importo", tipo: "importo" }
             );
         }
         cols.push(
@@ -996,9 +996,9 @@ const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw4oSO5i5uyFD
         cols.forEach(col => {
             let ind = '';
             if (sortColonna === col.key) ind = '<span class="sort-ind">' + (sortAsc ? '▲' : '▼') + '</span>';
-            headerHtml += '<th onclick="ordinaPerColonna(\'' + col.key + '\')">' + escapeHtml(col.label) + ind + '</th>';
+            headerHtml += '<th data-col="' + col.key + '" onclick="ordinaPerColonna(\'' + col.key + '\')">' + escapeHtml(col.label) + ind + '</th>';
         });
-        headerHtml += '<th style="cursor:default;">Azioni</th></tr>';
+        headerHtml += '<th data-col="azioni" style="cursor:default;">Azioni</th></tr>';
 
         headerHtml += '<tr class="filtri-riga">';
         cols.forEach(col => {
@@ -1008,18 +1008,18 @@ const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw4oSO5i5uyFD
                 getStatusOptionsBase().forEach(s => {
                     opts += '<option value="' + escapeHtml(s) + '"' + (val === s ? ' selected' : '') + '>' + escapeHtml(s) + '</option>';
                 });
-                headerHtml += '<th><select data-filtro="' + col.key + '" onchange="aggiornaFiltroColonna(\'' + col.key + '\', this.value)">' + opts + '</select></th>';
+                headerHtml += '<th data-col="' + col.key + '"><select data-filtro="' + col.key + '" onchange="aggiornaFiltroColonna(\'' + col.key + '\', this.value)">' + opts + '</select></th>';
             } else if (col.key === 'partnerDogana') {
                 let opts = '<option value="">Tutti</option>';
                 Object.keys(contiPartner).filter(k => k !== 'Altro').sort().concat(contiPartner['Altro'] !== undefined ? ['Altro'] : []).forEach(p => {
                     opts += '<option value="' + escapeHtml(p) + '"' + (val === p ? ' selected' : '') + '>' + escapeHtml(p) + '</option>';
                 });
-                headerHtml += '<th><select data-filtro="' + col.key + '" onchange="aggiornaFiltroColonna(\'' + col.key + '\', this.value)">' + opts + '</select></th>';
+                headerHtml += '<th data-col="' + col.key + '"><select data-filtro="' + col.key + '" onchange="aggiornaFiltroColonna(\'' + col.key + '\', this.value)">' + opts + '</select></th>';
             } else {
-                headerHtml += '<th><input type="text" data-filtro="' + col.key + '" value="' + escapeHtml(val) + '" placeholder="Filtra..." oninput="aggiornaFiltroColonna(\'' + col.key + '\', this.value)"></th>';
+                headerHtml += '<th data-col="' + col.key + '"><input type="text" data-filtro="' + col.key + '" value="' + escapeHtml(val) + '" placeholder="Filtra..." oninput="aggiornaFiltroColonna(\'' + col.key + '\', this.value)"></th>';
             }
         });
-        headerHtml += '<th></th></tr>';
+        headerHtml += '<th data-col="azioni"></th></tr>';
         thead.innerHTML = headerHtml;
 
         let bodyHtml = '';
@@ -1036,28 +1036,28 @@ const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw4oSO5i5uyFD
                 let val = rec[col.key] == null ? "" : rec[col.key];
                 if (tabellaModificabile && editabili[col.key]) {
                     if (col.key === 'partnerDogana') {
-                        bodyHtml += '<td><select data-field="partnerDogana" onchange="onChangeCellaTabella(' + idx + ',\'partnerDogana\', this.value)"></select></td>';
+                        bodyHtml += '<td data-col="partnerDogana"><select data-field="partnerDogana" onchange="onChangeCellaTabella(' + idx + ',\'partnerDogana\', this.value)"></select></td>';
                     } else if (col.key === 'status') {
                         let opts = buildStatusSelectHTML(true);
                         if (val && opts.indexOf('value="' + escapeHtml(val) + '"') === -1) {
                             opts += '<option value="' + escapeHtml(val) + '">' + escapeHtml(val) + '</option>';
                         }
-                        bodyHtml += '<td><select data-field="status" onchange="onChangeCellaTabella(' + idx + ',\'status\', this.value)">' + opts + '</select></td>';
+                        bodyHtml += '<td data-col="status"><select data-field="status" onchange="onChangeCellaTabella(' + idx + ',\'status\', this.value)">' + opts + '</select></td>';
                     } else if (col.tipo === 'data') {
                         let iso = formattaDataISO(val);
-                        bodyHtml += '<td><input type="date" data-field="' + col.key + '" value="' + escapeHtml(iso) + '" onchange="onChangeCellaTabella(' + idx + ',\'' + col.key + '\', formattaDataITA(this.value))"></td>';
+                        bodyHtml += '<td data-col="' + col.key + '"><input type="date" data-field="' + col.key + '" value="' + escapeHtml(iso) + '" onchange="onChangeCellaTabella(' + idx + ',\'' + col.key + '\', formattaDataITA(this.value))"></td>';
                     } else if (col.key === 'importoGarantito') {
-                        bodyHtml += '<td><input type="number" step="0.01" data-field="importoGarantito" value="' + escapeHtml(val) + '" onchange="onChangeCellaTabella(' + idx + ',\'importoGarantito\', this.value)"></td>';
+                        bodyHtml += '<td data-col="importoGarantito"><input type="number" step="0.01" data-field="importoGarantito" value="' + escapeHtml(val) + '" onchange="onChangeCellaTabella(' + idx + ',\'importoGarantito\', this.value)"></td>';
                     } else {
-                        bodyHtml += '<td><input type="text" data-field="' + col.key + '" value="' + escapeHtml(val) + '" onchange="onChangeCellaTabella(' + idx + ',\'' + col.key + '\', this.value)"></td>';
+                        bodyHtml += '<td data-col="' + col.key + '"><input type="text" data-field="' + col.key + '" value="' + escapeHtml(val) + '" onchange="onChangeCellaTabella(' + idx + ',\'' + col.key + '\', this.value)"></td>';
                     }
                 } else {
-                    bodyHtml += '<td>' + escapeHtml(val) + '</td>';
+                    bodyHtml += '<td data-col="' + col.key + '">' + escapeHtml(val) + '</td>';
                 }
             });
             let esitoTxt = esitiRiga[idx] ? esitiRiga[idx].msg : '';
             let esitoCol = esitiRiga[idx] ? (esitiRiga[idx].ok ? 'green' : 'red') : '';
-            bodyHtml += '<td>';
+            bodyHtml += '<td data-col="azioni">';
             bodyHtml += '<button type="button" class="btn-riga apri" onclick="event.stopPropagation(); apriSchedaDaTabella(' + idx + ')">Apri scheda</button>';
             if (tabellaModificabile) {
                 bodyHtml += '<button type="button" class="btn-riga salva" onclick="event.stopPropagation(); salvaRigaTabella(' + idx + ')">💾 Salva</button>';
