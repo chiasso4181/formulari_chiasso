@@ -1,0 +1,160 @@
+:root {
+            --bg: #f1f5f9;
+            --card: #ffffff;
+            --sidebar: #1e293b;
+            --sidebar-hover: #334155;
+            --accent: #f59e0b;
+            --accent-text: #b45309;
+            --primary: #1d4ed8;
+            --primary-hover: #1e40af;
+            --border: #e2e8f0;
+            --input-border: #cbd5e1;
+            --text: #0f172a;
+            --muted: #64748b;
+            --label: #334155;
+        }
+
+        body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background-color: var(--bg); margin: 0; padding: 0; display: flex; height: 100vh; overflow: hidden; color: var(--text); }
+        
+        .sidebar { background-color: var(--sidebar); width: 240px; display: flex; flex-direction: column; padding: 20px 0 16px; box-shadow: 2px 0 12px rgba(15,23,42,0.18); z-index: 10; }
+        .titolo-sidebar { color: var(--accent); text-align: center; font-size: 1.15rem; font-weight: 700; margin: 0 14px 18px; border-bottom: 1px solid #334155; padding-bottom: 14px; letter-spacing: 0.02em; }
+        .titolo-sidebar span { color: #cbd5e1 !important; }
+        .nav-btn { background-color: transparent; color: #e2e8f0; border: none; padding: 11px 14px; margin: 3px 12px; font-size: 0.98rem; cursor: pointer; border-radius: 6px; font-weight: 600; text-align: left; transition: background 0.18s, color 0.18s, border-color 0.18s; border-left: 3px solid transparent; }
+        .nav-btn:hover { background-color: var(--sidebar-hover); }
+        .nav-btn.attivo { background-color: var(--sidebar-hover); color: var(--accent); border-left-color: var(--accent); }
+
+        .main-content { flex: 1; padding: 22px 24px; overflow-y: auto; background-color: var(--bg); display: flex; flex-direction: column; }
+        
+        .top-action-bar { background-color: var(--card); padding: 12px 16px; border-radius: 10px; box-shadow: 0 2px 8px rgba(15,23,42,0.05); margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border); border-left: 4px solid var(--primary); max-width: 1150px; }
+        .titolo-form-corrente { font-size: 1.25rem; font-weight: 700; color: #1e3a8a; margin-left: 4px; }
+        .action-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
+        .action-btn { background-color: #f8fafc; border: 1px solid var(--input-border); padding: 8px 14px; font-weight: 600; cursor: pointer; border-radius: 6px; color: var(--label); transition: 0.15s; }
+        .action-btn:hover { background-color: #e2e8f0; }
+        .action-btn.attivo { background-color: var(--primary); color: white; border-color: var(--primary); }
+        
+        #btn-report { background-color: #7c3aed; color: white; border-color: #6d28d9; display: none; }
+        #btn-report:hover { background-color: #6d28d9; }
+
+        .pagina { display: none; background-color: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 28px; box-shadow: 0 4px 12px rgba(15, 23, 42, 0.06); box-sizing: border-box; max-width: 1150px; }
+        .pagina.attiva { display: block; }
+
+        .header-section { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 22px; gap: 16px; }
+        .titolo-box { width: auto; min-width: 150px; max-width: 180px; border: 1px solid #f59e0b; border-radius: 8px; padding: 10px 12px; background-color: #fffbeb; text-align: center; box-sizing: border-box; }
+        .titolo-box.titolo-box-wide { max-width: none; width: 100%; background: #f8fafc; border-color: var(--border); }
+        .titolo-box h1 { margin: 0; font-size: 1.15rem; color: var(--text); border: none; padding: 0; font-weight: 700; }
+        .label-progressivo { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #b45309; margin-bottom: 6px; }
+        .numero-giallo { background: transparent; height: 44px; font-size: 1.8rem; font-weight: 800; color: #b45309; display: flex; align-items: center; justify-content: center; margin-top: 0; }
+        
+        .grid-row { display: flex; gap: 18px; margin-bottom: 18px; }
+        .grid-item { display: flex; flex-direction: column; flex: 1; border: none; background: transparent; position: relative; }
+        .grid-item label { background: transparent; text-align: left; font-weight: 600; font-size: 0.85rem; color: var(--label); padding: 0; border: none; margin-bottom: 6px; display: flex; justify-content: flex-start; align-items: center; gap: 6px; flex-wrap: wrap; }
+        .grid-item input, .grid-item select { border: 1px solid var(--input-border); border-radius: 6px; padding: 10px 12px; font-size: 0.95rem; outline: none; width: 100%; box-sizing: border-box; font-family: inherit; background: #fff; color: var(--text); transition: border-color 0.15s, box-shadow 0.15s; }
+        .grid-item input:focus, .grid-item select:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); }
+
+        .grid-item.campo-extra label,
+        #label-extra-nuovo,
+        .grid-item.campo-extra label span { color: #1d4ed8 !important; background: transparent !important; }
+        .grid-item.campo-extra input { border-color: #93c5fd; background: #f8fafc; }
+        .area-filtri-cerca { background: #f8fafc; padding: 16px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 18px; }
+        
+        .listbox-multipla { background-color: #f8fafc; border: 1px solid var(--input-border); border-radius: 6px; width: 100%; min-height: 55px; outline: none; margin-top: 6px; }
+        .listbox-multipla option { padding: 4px; border-bottom: 1px dashed #e2e8f0; text-align: left; font-weight: 600; color: var(--primary); }
+
+        .btn-mini-modifica { background: var(--accent); color: white; border: none; border-radius: 4px; cursor: pointer; padding: 2px 7px; font-size: 0.7rem; font-weight: 700; margin-left: 4px; }
+        .btn-mini-modifica:hover { background: #d97706; }
+
+        .btn-cambia-utente { background: transparent; border: 1px solid var(--input-border); color: var(--muted); border-radius: 4px; cursor: pointer; padding: 1px 7px; font-size: 0.72rem; font-weight: 600; margin-left: 4px; }
+        .btn-cambia-utente:hover { background: #f1f5f9; color: var(--label); border-color: #94a3b8; }
+
+        .button-section { text-align: center; margin-top: 22px; display: flex; justify-content: center; align-items: center; gap: 14px; flex-wrap: wrap; }
+        .btn-main { background-color: var(--primary); border: none; color: #fff; padding: 11px 28px; font-weight: 600; font-size: 1rem; cursor: pointer; border-radius: 6px; box-shadow: 0 2px 6px rgba(29, 78, 216, 0.25); margin: 0; transition: background 0.15s, box-shadow 0.15s; }
+        .btn-main:hover { background-color: var(--primary-hover); }
+        .btn-main:disabled { background-color: #94a3b8; color: #fff; cursor: not-allowed; box-shadow: none; }
+        #btn-salva-nuovo { background-color: var(--primary); color: #fff; }
+        #btn-salva-nuovo:hover { background-color: var(--primary-hover); }
+        #btn-salva-modifica { background-color: #d97706 !important; box-shadow: 0 2px 6px rgba(217, 119, 6, 0.25); }
+        #btn-salva-modifica:hover { background-color: #b45309 !important; }
+        #btn-cerca { background-color: var(--sidebar) !important; box-shadow: 0 2px 6px rgba(15, 23, 42, 0.2); }
+        #btn-cerca:hover { background-color: #0f172a !important; }
+        
+        .messaggio-esito { text-align: center; font-weight: 600; font-size: 1rem; margin: 0; }
+        .barra-navigazione { display: flex; justify-content: space-between; align-items: center; background: var(--sidebar); color: white; padding: 10px 14px; border-radius: 8px; margin-bottom: 18px; font-weight: 600; }
+        .btn-freccia { background: white; color: var(--sidebar); border: none; padding: 6px 14px; font-size: 1.05rem; cursor: pointer; font-weight: 700; border-radius: 6px; }
+        .btn-freccia:hover { background: #f1f5f9; }
+        .obbligatorio { color: #dc2626; font-weight: 700; margin-left: 2px; }
+
+        .meta-registrazione { text-align: right; font-weight: 600; font-size: 0.9rem; color: var(--muted); line-height: 1.5; }
+
+        #blocco-speciali-nuovo,
+        #blocco-speciali-risultato {
+            background: #fffbeb;
+            border: 1px solid #fde68a !important;
+            border-left: 4px solid #f59e0b !important;
+            border-radius: 8px;
+            padding: 14px 16px !important;
+            box-sizing: border-box;
+        }
+        #blocco-speciali-nuovo .grid-item label,
+        #blocco-speciali-risultato .grid-item label { color: #b45309 !important; background: transparent !important; }
+
+        #btn-azione-admin { background-color: var(--sidebar); color: #e2e8f0; border-color: #0f172a; }
+        #btn-azione-admin:hover { background-color: #334155; }
+        #btn-azione-admin.attivo { background-color: var(--accent); color: #fff; border-color: #d97706; }
+
+        .commutatore-vista { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 15px; align-items: center; }
+        .btn-vista { background: #f8fafc; border: 1px solid var(--input-border); padding: 8px 16px; font-weight: 600; cursor: pointer; border-radius: 6px; color: var(--label); }
+        .btn-vista:hover { background: #e2e8f0; }
+        .btn-vista.attivo { background: var(--primary); color: white; border-color: var(--primary); }
+        .toolbar-tabella { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin-bottom: 12px; }
+        .toolbar-tabella .btn-main { font-size: 0.95rem; padding: 8px 16px; }
+        .btn-csv { background-color: #059669 !important; box-shadow: 0 2px 6px rgba(5, 150, 105, 0.25); font-size: 0.95rem; padding: 8px 16px; }
+        .btn-csv:hover { background-color: #047857 !important; }
+
+        .tabella-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 8px; background: #fff; max-height: 65vh; }
+        table.excel-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; min-width: 900px; }
+        table.excel-table th, table.excel-table td { border: 1px solid #e2e8f0; padding: 6px 8px; text-align: left; white-space: nowrap; }
+        table.excel-table thead th { background: #1e40af; color: #fff; cursor: pointer; user-select: none; position: sticky; top: 0; z-index: 2; }
+        table.excel-table thead th:hover { background: #2563eb; }
+        table.excel-table thead th .sort-ind { margin-left: 4px; opacity: 0.85; }
+        table.excel-table tbody tr:nth-child(even) { background: #f8fafc; }
+        table.excel-table tbody tr:hover { background: #eff6ff; }
+        table.excel-table tbody tr.riga-modificata { background: #fffbeb !important; }
+        table.excel-table tbody tr.riga-ok { background: #ecfdf5 !important; }
+        table.excel-table tbody tr.riga-err { background: #fef2f2 !important; }
+        table.excel-table .filtri-riga th { background: #dbeafe; color: #1e3a8a; cursor: default; position: sticky; top: 32px; z-index: 1; padding: 4px; }
+        table.excel-table .filtri-riga input, table.excel-table .filtri-riga select { width: 100%; box-sizing: border-box; padding: 4px 6px; font-size: 0.8rem; border: 1px solid var(--input-border); border-radius: 4px; }
+        table.excel-table td input, table.excel-table td select { width: 100%; box-sizing: border-box; padding: 4px 6px; font-size: 0.8rem; border: 1px solid #f59e0b; border-radius: 4px; background: #fffbeb; }
+        table.excel-table td .btn-riga { padding: 4px 8px; font-size: 0.75rem; font-weight: 600; cursor: pointer; border: 1px solid var(--input-border); border-radius: 4px; background: #f8fafc; margin: 1px; }
+        table.excel-table td .btn-riga.salva { background: #d97706; color: #fff; border-color: #b45309; }
+        table.excel-table td .btn-riga.apri { background: var(--primary); color: #fff; border-color: #1e40af; }
+        .esito-riga { font-size: 0.75rem; font-weight: 600; max-width: 120px; white-space: normal; }
+
+        .admin-sezione { background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; padding: 16px; margin-bottom: 18px; }
+        .admin-sezione h2 { margin: 0 0 12px; color: var(--sidebar); font-size: 1.1rem; border-bottom: 2px solid var(--accent); padding-bottom: 6px; }
+        .admin-azioni { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px; align-items: center; }
+        #tabella-admin-partner { width: 100%; border-collapse: collapse; font-size: 0.9rem; background: #fff; }
+        #tabella-admin-partner th, #tabella-admin-partner td { border: 1px solid var(--border); padding: 8px; }
+        #tabella-admin-partner th { background: var(--sidebar); color: #fff; }
+        #tabella-admin-partner input { width: 100%; box-sizing: border-box; padding: 8px 10px; border: 1px solid var(--input-border); border-radius: 6px; }
+        .admin-status-grid { display: flex; gap: 20px; flex-wrap: wrap; }
+        .admin-status-box { flex: 1; min-width: 220px; }
+        .admin-status-box textarea { width: 100%; min-height: 90px; box-sizing: border-box; padding: 10px 12px; font-family: inherit; border: 1px solid var(--input-border); border-radius: 6px; }
+        .admin-status-box textarea:focus { outline: none; border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); }
+
+        #area-risultati { border-top: 1px solid var(--border); padding-top: 20px; }
+
+        @media (max-width: 768px) {
+            body { flex-direction: column; overflow: auto; height: auto; }
+            .sidebar { width: 100%; flex-direction: row; flex-wrap: wrap; padding: 10px; justify-content: space-around; position: relative; }
+            .titolo-sidebar { display: none; } 
+            .nav-btn { flex: 1 1 30%; text-align: center; padding: 8px 5px; font-size: 0.85rem; margin: 2px; border: none; border-bottom: 3px solid transparent; border-left: none; }
+            .nav-btn.attivo { border-left: none; border-bottom: 3px solid var(--accent); }
+            .top-action-bar { flex-direction: column; gap: 10px; text-align: center; }
+            .main-content { padding: 12px; overflow-y: visible; }
+            .grid-row { flex-direction: column; gap: 12px; }
+            .header-section { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .titolo-box { width: auto; max-width: 180px; }
+            .pagina { padding: 18px; }
+            table.excel-table .filtri-riga th { top: 28px; }
+            .meta-registrazione { text-align: left; }
+        }
